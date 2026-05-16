@@ -1,0 +1,565 @@
+
+<style>
+:root{--g:#DCA95C;--gl:#F0C878;--gd:#B8892A;--bk:#080808;--c1:#111;--c2:#1A1A1A;--c3:#242424;--c4:#343434;--wh:#FFF;--w8:rgba(255,255,255,.85);--w6:rgba(255,255,255,.6);--w3:rgba(255,255,255,.3);--w1:rgba(255,255,255,.1);--ok:#4CAF50;--er:#E24B4A;--wa:#E8A020}
+@keyframes sUp{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes ping{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.4);opacity:0}}
+@keyframes sPop{0%{transform:scale(1)}45%{transform:scale(1.55)}100%{transform:scale(1)}}
+@keyframes slideL{from{transform:translateX(14px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,169,92,.4)}50%{box-shadow:0 0 0 8px rgba(220,169,92,0)}}
+.gb{background:var(--g);color:#000;border:none;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font-sans)}
+.gb:hover{background:var(--gl);transform:translateY(-1px)}
+.gb:active{transform:scale(.97)}
+.qb{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;font-family:var(--font-sans)}
+.qb:active{transform:scale(.85)}
+.pl{padding:7px 13px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid;transition:all .2s;font-weight:500;font-family:var(--font-sans);white-space:nowrap}
+.pl.on{background:var(--g);color:#000;border-color:var(--g)}
+.pl.off{background:transparent;color:var(--w6);border-color:var(--c4)}
+.pl.off:hover{border-color:var(--g);color:var(--g)}
+.st{font-size:28px;cursor:pointer;transition:all .15s;color:var(--c4)}
+.st.on{color:var(--g)}
+.mc{background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:12px;margin-bottom:9px;transition:all .22s}
+.mc:hover{border-color:var(--g);transform:translateX(-2px)}
+.bx{display:inline-flex;align-items:center;padding:3px 9px;border-radius:7px;font-size:11px;font-weight:500}
+.bx.ok{background:rgba(76,175,80,.15);color:var(--ok)}
+.bx.er{background:rgba(226,75,74,.15);color:var(--er)}
+.bx.wa{background:rgba(232,160,32,.15);color:var(--wa)}
+.bx.go{background:rgba(220,169,92,.15);color:var(--g)}
+.tb{flex:1;padding:9px 2px;font-size:11px;border:none;border-bottom:2px solid transparent;background:transparent;cursor:pointer;transition:all .2s;font-family:var(--font-sans);color:rgba(255,255,255,.45)}
+.tb.on{color:var(--gl);font-weight:500;border-bottom-color:var(--g)}
+.ntb{flex:1;padding:11px 6px;font-size:12px;border:none;cursor:pointer;transition:all .2s;font-family:var(--font-sans);white-space:nowrap}
+.ntb.on{background:var(--g);color:#000;font-weight:500}
+.ntb.off{background:var(--c2);color:var(--w6)}
+.ntb.off:hover{background:var(--c3)}
+.sc{background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:13px;margin-bottom:10px}
+</style>
+
+<div style="background:var(--bk);border-radius:var(--border-radius-lg);overflow:hidden;font-family:var(--font-sans)" dir="rtl">
+
+<div style="display:flex;border-bottom:2px solid var(--c3)">
+  <button class="ntb on" id="nb-c" onclick="sMain('c')">📱 الزبون</button>
+  <button class="ntb off" id="nb-k" onclick="sMain('k')">🍳 المطبخ</button>
+  <button class="ntb off" id="nb-w" onclick="sMain('w')">👨‍🍽️ النادل</button>
+  <button class="ntb off" id="nb-a" onclick="sMain('a')">📊 الإدارة</button>
+</div>
+
+<!-- ===== CUSTOMER ===== -->
+<div id="vc" style="padding:1rem;display:flex;justify-content:center;background:var(--bk)">
+  <div style="width:308px">
+    <div style="background:var(--c1);border:2px solid var(--c3);border-radius:28px;overflow:hidden;box-shadow:0 0 50px rgba(220,169,92,.07)">
+      <div style="background:var(--c2);padding:15px 14px 0;border-bottom:1px solid var(--c3)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:10px;color:var(--gd);letter-spacing:2px;margin-bottom:3px">SAJ AL-REEF | TABLE 5 (QR 📍)</div>
+            <div style="font-size:19px;font-weight:500;color:var(--g);font-family:var(--font-serif)">ساج الريف</div>
+            <div style="font-size:10px;color:var(--w3);margin-top:2px">أهلاً وسهلاً</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <button onclick="this.textContent=this.textContent==='AR'?'EN':'AR'" style="background:var(--c3);color:var(--g);border:1px solid var(--c4);border-radius:7px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font-sans)">AR</button>
+            <div style="display:flex;align-items:center;gap:5px">
+              <div style="position:relative;width:8px;height:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ok);position:absolute"></div><div style="width:8px;height:8px;border-radius:50%;background:var(--ok);animation:ping 1.8s infinite;position:absolute"></div></div>
+              <span style="font-size:10px;color:var(--ok)">مباشر</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex">
+          <button class="tb on" id="ct-0" onclick="cTab(0)">تتبع</button>
+          <button class="tb" id="ct-1" onclick="cTab(1)">المنيو</button>
+          <button class="tb" id="ct-2" onclick="cTab(2)">سلتي</button>
+          <button class="tb" id="ct-3" onclick="cTab(3)">الحساب</button>
+          <button class="tb" id="ct-4" onclick="cTab(4)">تقييم</button>
+        </div>
+      </div>
+
+      <div id="cCont" style="height:490px;overflow-y:auto;background:var(--bk);scrollbar-width:thin;scrollbar-color:var(--c4) transparent">
+
+        <!-- TAB 0: TRACKING -->
+        <div id="cv-0" style="padding:14px">
+          <div style="font-size:12px;color:var(--g);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--er);animation:blink 1s infinite"></div>
+            Live Order Tracking
+          </div>
+          <div style="background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:13px;margin-bottom:13px">
+            <div id="ts0" style="display:flex;align-items:center;gap:10px;padding:7px 0">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🛒</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--wh)">تم الطلب</div><div style="font-size:10px;color:var(--w3)">7:05 PM</div></div>
+              <span class="bx ok">✓</span>
+            </div>
+            <div id="ln1" style="width:1.5px;height:14px;background:var(--gd);margin-right:13px;margin-top:-2px;margin-bottom:-2px"></div>
+            <div id="ts1" style="display:flex;align-items:center;gap:10px;padding:7px 0">
+              <div id="ti1" style="width:28px;height:28px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;animation:blink 1.5s infinite">🍳</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--wh)">قيد التحضير</div><div style="font-size:10px;color:var(--w3)">7:10 PM</div></div>
+              <span id="tb1" class="bx wa">⏳ الآن</span>
+            </div>
+            <div id="ln2" style="width:1.5px;height:14px;background:var(--c4);margin-right:13px;margin-top:-2px;margin-bottom:-2px"></div>
+            <div id="ts2" style="display:flex;align-items:center;gap:10px;padding:7px 0;opacity:.35">
+              <div id="ti2" style="width:28px;height:28px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">✅</div>
+              <div style="flex:1"><div style="font-size:12px;color:var(--w6)">جاهز</div><div style="font-size:10px;color:var(--c4)">— : —</div></div>
+              <span id="tb2" class="bx" style="opacity:0">—</span>
+            </div>
+            <div id="ln3" style="width:1.5px;height:14px;background:var(--c4);margin-right:13px;margin-top:-2px;margin-bottom:-2px"></div>
+            <div id="ts3" style="display:flex;align-items:center;gap:10px;padding:7px 0;opacity:.35">
+              <div id="ti3" style="width:28px;height:28px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🍽️</div>
+              <div style="flex:1"><div style="font-size:12px;color:var(--w6)">تم التقديم</div><div style="font-size:10px;color:var(--c4)">— : —</div></div>
+              <span id="tb3" class="bx" style="opacity:0">—</span>
+            </div>
+          </div>
+          <button class="gb" id="advBtn" style="width:100%;margin-bottom:13px;animation:pulse 2.5s infinite" onclick="advOrder(this)">▶ محاكاة تقدّم الطلب</button>
+          <div style="font-size:12px;color:var(--g);font-weight:500;margin-bottom:10px">🔔 نداء ذكي Smart Call</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+            <button onclick="sCall(this,'نادل')" style="background:var(--c2);border:1px solid var(--c3);border-radius:10px;padding:11px 4px;cursor:pointer;transition:all .2s;font-family:var(--font-sans)"><div style="font-size:20px;margin-bottom:4px">👨‍🍽️</div><div style="font-size:11px;color:var(--w6)">نادل</div></button>
+            <button onclick="sCall(this,'ماء')" style="background:var(--c2);border:1px solid var(--c3);border-radius:10px;padding:11px 4px;cursor:pointer;transition:all .2s;font-family:var(--font-sans)"><div style="font-size:20px;margin-bottom:4px">💧</div><div style="font-size:11px;color:var(--w6)">ماء</div></button>
+            <button onclick="sCall(this,'مناديل')" style="background:var(--c2);border:1px solid var(--c3);border-radius:10px;padding:11px 4px;cursor:pointer;transition:all .2s;font-family:var(--font-sans)"><div style="font-size:20px;margin-bottom:4px">🧻</div><div style="font-size:11px;color:var(--w6)">مناديل</div></button>
+          </div>
+          <div id="cFB" style="display:none;text-align:center;font-size:11px;color:var(--g);padding:9px;background:rgba(220,169,92,.08);border:1px solid rgba(220,169,92,.2);border-radius:9px;animation:fadeIn .3s"></div>
+        </div>
+
+        <!-- TAB 1: MENU -->
+        <div id="cv-1" style="display:none;padding:14px">
+          <div style="display:flex;gap:7px;overflow-x:auto;margin-bottom:12px;padding-bottom:3px;scrollbar-width:none">
+            <button class="pl on" onclick="fc(this,'all')">الكل</button>
+            <button class="pl off" onclick="fc(this,'s')">مقبلات</button>
+            <button class="pl off" onclick="fc(this,'m')">رئيسية</button>
+            <button class="pl off" onclick="fc(this,'d')">مشروبات</button>
+            <button class="pl off" onclick="fc(this,'sw')">حلويات</button>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(220,169,92,.12),rgba(191,122,84,.1));border:1px solid rgba(220,169,92,.2);border-radius:11px;padding:9px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px">🔥</span><span style="font-size:11px;color:var(--gl);font-weight:500">الأكثر طلباً: ساج برايم | Top: Saj Prime</span>
+          </div>
+          <div id="mList"></div>
+        </div>
+
+        <!-- TAB 2: CART -->
+        <div id="cv-2" style="display:none;padding:14px">
+          <div id="cEmpty" style="text-align:center;padding:55px 20px;color:var(--c4)"><div style="font-size:42px;margin-bottom:10px">🛒</div><div style="font-size:13px">السلة فارغة</div></div>
+          <div id="cItems"></div>
+          <div id="cFoot" style="display:none;margin-top:10px">
+            <div style="display:flex;justify-content:space-between;padding:12px;background:var(--c2);border:1px solid var(--c3);border-radius:11px;margin-bottom:11px">
+              <span style="font-size:12px;color:var(--w6)">المجموع الكلي</span>
+              <span id="cTot" style="font-size:16px;font-weight:500;color:var(--g)">0 د.ع</span>
+            </div>
+            <button class="gb" style="width:100%;animation:pulse 2s infinite" onclick="confOrder(this)">تأكيد الطلب للمطبخ 🍽️</button>
+            <div id="cConf" style="display:none;text-align:center;margin-top:10px;font-size:12px;color:var(--g);animation:fadeIn .4s">✓ وصل طلبك للمطبخ!</div>
+          </div>
+        </div>
+
+        <!-- TAB 3: BILL -->
+        <div id="cv-3" style="display:none;padding:22px;text-align:center">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--c2);border:1px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;animation:pulse 2.5s infinite">🧾</div>
+          <div style="font-size:17px;font-weight:500;color:var(--g);margin-bottom:6px;font-family:var(--font-serif)">طلب الحساب</div>
+          <div style="font-size:11px;color:var(--w6);margin-bottom:22px;line-height:2">سيصل النادل خلال دقائق</div>
+          <button class="gb" style="width:100%;margin-bottom:12px" onclick="reqBill(this)">اطلب الحساب الآن</button>
+          <div id="bSent" style="display:none;font-size:12px;color:var(--g);animation:fadeIn .4s;margin-bottom:12px">✓ تم إبلاغ النادل!</div>
+          <div style="height:.5px;background:var(--c3);margin:16px 0"></div>
+          <div style="font-size:11px;color:var(--w6);text-align:right;margin-bottom:8px">لديك ملاحظة؟</div>
+          <textarea id="ntArea" style="width:100%;height:80px;background:var(--c2);border:1px solid var(--c3);border-radius:10px;padding:10px;color:var(--wh);font-size:12px;resize:none;box-sizing:border-box;direction:rtl;outline:none;font-family:var(--font-sans);transition:border-color .2s" placeholder="اكتب ملاحظتك هنا..." onfocus="this.style.borderColor='#DCA95C'" onblur="this.style.borderColor=''"></textarea>
+          <button style="width:100%;margin-top:8px;background:transparent;color:var(--g);border:1px solid var(--gd);border-radius:9px;padding:10px;font-size:12px;cursor:pointer;font-family:var(--font-sans);transition:all .2s" onmouseover="this.style.background='rgba(220,169,92,.1)'" onmouseout="this.style.background='transparent'" onclick="sendNote(this)">إرسال الملاحظة</button>
+          <div id="nSent" style="display:none;font-size:12px;color:var(--g);margin-top:8px;animation:fadeIn .4s">✓ تم إرسال ملاحظتك!</div>
+        </div>
+
+        <!-- TAB 4: RATE -->
+        <div id="cv-4" style="display:none;padding:16px">
+          <div style="font-size:17px;font-weight:500;color:var(--g);margin-bottom:4px;font-family:var(--font-serif)">قيّم تجربتك</div>
+          <div style="font-size:11px;color:var(--w6);margin-bottom:16px">رأيك يساعدنا على التطوير</div>
+          <div class="sc"><div style="font-size:11px;color:var(--w6);margin-bottom:10px">جودة الأكل 🍽️</div><div id="rf" style="display:flex;gap:3px"><span class="st" onclick="rStar('rf',0)">★</span><span class="st" onclick="rStar('rf',1)">★</span><span class="st" onclick="rStar('rf',2)">★</span><span class="st" onclick="rStar('rf',3)">★</span><span class="st" onclick="rStar('rf',4)">★</span></div></div>
+          <div class="sc"><div style="font-size:11px;color:var(--w6);margin-bottom:10px">جودة الخدمة 👨‍🍽️</div><div id="rs" style="display:flex;gap:3px"><span class="st" onclick="rStar('rs',0)">★</span><span class="st" onclick="rStar('rs',1)">★</span><span class="st" onclick="rStar('rs',2)">★</span><span class="st" onclick="rStar('rs',3)">★</span><span class="st" onclick="rStar('rs',4)">★</span></div></div>
+          <div class="sc"><div style="font-size:11px;color:var(--w6);margin-bottom:10px">التجربة الكلية ⭐</div><div id="ro" style="display:flex;gap:3px"><span class="st" onclick="rStar('ro',0)">★</span><span class="st" onclick="rStar('ro',1)">★</span><span class="st" onclick="rStar('ro',2)">★</span><span class="st" onclick="rStar('ro',3)">★</span><span class="st" onclick="rStar('ro',4)">★</span></div></div>
+          <textarea style="width:100%;height:68px;background:var(--c2);border:1px solid var(--c3);border-radius:10px;padding:10px;color:var(--wh);font-size:12px;resize:none;box-sizing:border-box;direction:rtl;outline:none;font-family:var(--font-sans);transition:border-color .2s" placeholder="تعليق إضافي..." onfocus="this.style.borderColor='#DCA95C'" onblur="this.style.borderColor=''"></textarea>
+          <button class="gb" style="width:100%;margin-top:10px" onclick="sendRate(this)">إرسال التقييم ✨</button>
+          <div id="rSent" style="display:none;text-align:center;font-size:12px;color:var(--g);margin-top:10px;animation:fadeIn .4s">✓ شكراً على تقييمك الكريم!</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--w3)">جرّب جميع التبويبات • المنيو → سلتي → الحساب → تقييم</div>
+  </div>
+</div>
+
+<!-- ===== KITCHEN ===== -->
+<div id="vk" style="display:none;padding:1rem;background:var(--bk)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div><div style="font-size:15px;font-weight:500;color:var(--wh)">SAJ AL-REEF | Kitchen Hub 🍳</div><div style="font-size:11px;color:var(--w6);margin-top:3px">الطلبات النشطة — مرتبة زمنياً | Active Orders</div></div>
+    <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ok);animation:blink 1s infinite"></div><span style="font-size:11px;color:var(--ok)">مباشر</span></div>
+  </div>
+  <div id="kOrds" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px"></div>
+</div>
+
+<!-- ===== WAITER ===== -->
+<div id="vw" style="display:none;padding:1rem;background:var(--bk)">
+  <div style="font-size:15px;font-weight:500;color:var(--wh);margin-bottom:1rem">SAJ AL-REEF | Staff Hub 👨‍🍽️</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div>
+      <div style="font-size:12px;font-weight:500;color:var(--g);margin-bottom:10px;display:flex;align-items:center;gap:7px">
+        <div style="position:relative;width:12px;height:12px;flex-shrink:0"><div style="width:8px;height:8px;border-radius:50%;background:var(--er);position:absolute;top:2px;right:2px"></div><div style="width:12px;height:12px;border-radius:50%;background:var(--er);opacity:.2;animation:ping 1.5s infinite;position:absolute"></div></div>
+        Smart Call Alerts
+      </div>
+      <div id="wAlerts"></div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:500;color:var(--g);margin-bottom:10px">📅 جدول الحجوزات</div>
+      <div id="wRes"></div>
+    </div>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--g);margin-bottom:10px">📋 قائمة الانتظار</div>
+  <div style="background:var(--c1);border:1px solid var(--c3);border-radius:12px;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:var(--c2)"><td style="padding:9px 12px;color:var(--w6)">الطلب</td><td style="padding:9px 12px;color:var(--w6)">الطاولة</td><td style="padding:9px 12px;color:var(--w6)">العناصر</td><td style="padding:9px 12px;color:var(--w6)">النادل</td><td style="padding:9px 12px;color:var(--w6)">الحالة</td></tr></thead>
+      <tbody id="wQueue"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== ADMIN ===== -->
+<div id="va" style="display:none;padding:1rem;background:var(--bk)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div><div style="font-size:15px;font-weight:500;color:var(--wh)">Admin Power Dashboard</div><div style="font-size:11px;color:var(--w6);margin-top:2px">SAJ AL-REEF | Owner View</div></div>
+    <div style="display:flex;align-items:center;gap:7px"><div style="position:relative;width:10px;height:10px"><div style="width:6px;height:6px;border-radius:50%;background:var(--ok);position:absolute;top:2px;right:2px"></div><div style="width:10px;height:10px;border-radius:50%;background:var(--ok);opacity:.2;animation:ping 2s infinite;position:absolute"></div></div><span style="font-size:11px;color:var(--ok)">LIVE</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div style="background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--w6);margin-bottom:5px">الطلبات اليوم</div><div style="font-size:24px;font-weight:500;color:var(--g)">127</div><div style="font-size:11px;color:var(--ok);margin-top:4px">▲ 18 هذه الساعة</div></div>
+    <div style="background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--w6);margin-bottom:5px">الطاولات النشطة</div><div style="font-size:24px;font-weight:500;color:var(--g)">9<span style="font-size:14px;color:var(--c4)">/15</span></div><div style="font-size:11px;color:var(--w6);margin-top:4px">60% مشغولة</div></div>
+    <div style="background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--w6);margin-bottom:5px">الإيراد اليوم</div><div style="font-size:24px;font-weight:500;color:var(--g)">485K</div><div style="font-size:11px;color:var(--ok);margin-top:4px">د.ع ▲ 12%</div></div>
+    <div style="background:var(--c2);border:1px solid var(--c3);border-radius:12px;padding:14px"><div style="font-size:11px;color:var(--w6);margin-bottom:5px">متوسط التقييم</div><div style="font-size:24px;font-weight:500;color:var(--g)">4.8 ★</div><div style="font-size:11px;color:var(--w6);margin-top:4px">من 5 نجوم</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="background:linear-gradient(145deg,#1A1200,#0D0D0D);border:1px solid var(--gd);border-radius:13px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:15px">🧠</span><span style="font-size:13px;font-weight:500;color:var(--g)">AI Insights</span><span class="bx go" style="margin-right:auto;font-size:10px">مباشر</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:rgba(220,169,92,.08);border:1px solid rgba(220,169,92,.18);border-radius:9px;padding:10px"><div style="font-size:11px;color:var(--gl);line-height:1.7">💡 "قلّل سعر ساج برايم، الطلب ضعيف هذا الأسبوع"</div></div>
+        <div style="background:rgba(220,169,92,.08);border:1px solid rgba(220,169,92,.18);border-radius:9px;padding:10px"><div style="font-size:11px;color:var(--gl);line-height:1.7">📈 "دجاج مشوي ترند اليوم — فعّل عرض خاص الآن"</div></div>
+        <div style="background:rgba(220,169,92,.08);border:1px solid rgba(220,169,92,.18);border-radius:9px;padding:10px"><div style="font-size:11px;color:var(--gl);line-height:1.7">⏰ "ذروة الطلبات 7-9 مساءً — جهّز فريق إضافي"</div></div>
+      </div>
+    </div>
+    <div style="background:var(--c1);border:1px solid var(--c3);border-radius:13px;padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:13px;font-weight:500;color:var(--wh)">🔔 إشعارات مباشرة</div><span class="bx er" id="nCnt">3 جديد</span></div>
+      <div id="aNtf"></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="background:var(--c1);border:1px solid var(--c3);border-radius:13px;padding:14px">
+      <div style="font-size:13px;font-weight:500;color:var(--wh);margin-bottom:14px">📊 الأكثر طلباً + حجم الطلبات بالساعة</div>
+      <div id="aTop"></div>
+      <div style="font-size:11px;color:var(--w6);margin:13px 0 8px">حجم الطلبات بالساعة</div>
+      <div id="aChart" style="display:flex;align-items:flex-end;gap:3px;height:58px"></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--c4);margin-top:4px"><span>12م</span><span>3م</span><span>6م</span><span>9م</span><span>12ص</span><span>3ص</span><span>6ص</span><span>9ص</span></div>
+    </div>
+    <div style="background:var(--c1);border:1px solid var(--c3);border-radius:13px;padding:14px">
+      <div style="font-size:13px;font-weight:500;color:var(--wh);margin-bottom:12px">🗺️ خريطة الطاولات — اضغط لتغيير الحالة</div>
+      <div id="aFloor" style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--w6)"><span style="width:9px;height:9px;border-radius:3px;background:var(--c3);display:inline-block"></span>فارغ</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--w6)"><span style="width:9px;height:9px;border-radius:3px;background:var(--g);display:inline-block"></span>مشغول</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--w6)"><span style="width:9px;height:9px;border-radius:3px;background:var(--er);display:inline-block"></span>طلب حساب</div>
+      </div>
+    </div>
+  </div>
+  <div style="background:var(--c1);border:1px solid var(--c3);border-radius:13px;padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:500;color:var(--wh)">🎯 إدارة العروض</div>
+      <button class="gb" style="padding:7px 13px;font-size:11px" onclick="addOffer()">+ إضافة عرض</button>
+    </div>
+    <div id="aOffers" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var mD=[
+  {id:1,n:'ساج برايم',d:'ستيك مشوي بصلصة الريف الأصيلة',p:8500,c:'m',em:'🥩',hot:true},
+  {id:2,n:'ساج دجاج',d:'دجاج مشوي مع خضار طازجة',p:6500,c:'m',em:'🍗'},
+  {id:3,n:'بيتزا الريف',d:'بيتزا طازجة بجبن موزاريلا',p:7000,c:'m',em:'🍕'},
+  {id:4,n:'حمص طازج',d:'مع زيت زيتون وبابريكا',p:2500,c:'s',em:'🧆'},
+  {id:5,n:'سلطة الريف',d:'خضار طازجة مع ليمون وزيتون',p:2000,c:'s',em:'🥗'},
+  {id:6,n:'شاي عراقي',d:'بالهيل والزعفران الطازج',p:1000,c:'d',em:'🍵'},
+  {id:7,n:'عصير طازج',d:'مشكل يومي طازج',p:2000,c:'d',em:'🥤'},
+  {id:8,n:'بقلاوة',d:'مكسرات وعسل طبيعي أصيل',p:2500,c:'sw',em:'🍯'}
+];
+var cart={},curCat='all',oStep=1;
+
+var kOrds=[
+  {id:'#212',tbl:'T8',items:'ساج برايم (1)، بطاطا (2)',time:'14:35',s:'new'},
+  {id:'#213',tbl:'T5',items:'بيتزا (1)، سلطة (1)',time:'14:38',s:'new'},
+  {id:'#214',tbl:'T6',items:'ساج دجاج (2)',time:'14:42',s:'ready'},
+  {id:'#215',tbl:'T2',items:'حمص (2)، شاي (3)',time:'14:45',s:'new'},
+  {id:'#216',tbl:'T11',items:'بقلاوة (4)، عصير (2)',time:'14:47',s:'new'}
+];
+var alerts=[
+  {id:1,tbl:'6',type:'نادل',em:'👨‍🍽️',time:'7:33'},
+  {id:2,tbl:'11',type:'ماء',em:'💧',time:'7:35'},
+  {id:3,tbl:'5',type:'مناديل',em:'🧻',time:'7:36'}
+];
+var resv=[
+  {t:'13:00',tbl:'T3',n:'أحمد علي',ok:true},
+  {t:'14:30',tbl:'T12',n:'سارة محمد',ok:true},
+  {t:'19:00',tbl:'T7',n:'محمد حسن',ok:false},
+  {t:'20:30',tbl:'T4',n:'فاطمة خالد',ok:false}
+];
+var queueD=[
+  {id:'#201',tbl:'T8',items:'ساج (1)، بطاطا (2)',waiter:'أحمد',s:'serving'},
+  {id:'#202',tbl:'T5',items:'بيتزا (1)',waiter:'نادية',s:'assigned'},
+  {id:'#203',tbl:'T3',items:'حمص (2)',waiter:'سامي',s:'done'}
+];
+var topI=[
+  {n:'ساج برايم',c:89,p:89,col:'#DCA95C'},
+  {n:'بيتزا الريف',c:72,p:72,col:'#4CAF50'},
+  {n:'دجاج مشوي',c:55,p:55,col:'#378ADD'},
+  {n:'حمص',c:41,p:41,col:'#E8A020'},
+  {n:'بقلاوة',c:28,p:28,col:'#BF7A54'}
+];
+var notifsD=[
+  {tbl:'3',msg:'طلب الحساب',time:'2 دق.',cl:'#E24B4A'},
+  {tbl:'7',msg:'طلب جديد #216',time:'5 دق.',cl:'#DCA95C'},
+  {tbl:'11',msg:'نداء: ماء',time:'8 دق.',cl:'#E8A020'},
+  {tbl:'9',msg:'تقييم ★★★★★',time:'12 دق.',cl:'#4CAF50'}
+];
+var tables=[
+  {n:1,s:'g'},{n:2,s:'g'},{n:3,s:'e'},{n:4,s:'g'},{n:5,s:'f'},
+  {n:6,s:'g'},{n:7,s:'e'},{n:8,s:'g'},{n:9,s:'g'},{n:10,s:'f'},
+  {n:11,s:'f'},{n:12,s:'g'},{n:13,s:'f'},{n:14,s:'g'},{n:15,s:'e'}
+];
+var hourVols=[2,1,3,7,20,38,55,60,48,62,45,28,18,12,8,5,3,2,5,18,42,58,62,38];
+var offers=[
+  {t:'Happy Hour',d:'خصم 20% — 6-8 مساءً',on:true},
+  {t:'وجبة العائلة',d:'4 أشخاص بسعر 3',on:true},
+  {t:'عرض الغداء',d:'طبق رئيسي + مشروب',on:false},
+  {t:'الجمعة الخاصة',d:'خصم 15% للكل',on:false}
+];
+var extraOffers=[
+  {t:'عرض المساء',d:'خصم 25% بعد 10 مساءً',on:true},
+  {t:'وجبة الطفل',d:'وجبة مجانية مع كل وجبتين',on:true}
+];
+var eoIdx=0;
+
+function sMain(v){
+  var displays={c:'flex',k:'block',w:'block',a:'block'};
+  ['c','k','w','a'].forEach(function(x){
+    document.getElementById('v'+x).style.display=x===v?displays[x]:'none';
+    var b=document.getElementById('nb-'+x);
+    b.className=x===v?'ntb on':'ntb off';
+  });
+  if(v==='k')renderKitchen();
+  if(v==='w')renderWaiter();
+  if(v==='a')renderAdmin();
+  if(v==='c')renderMenu();
+}
+
+function cTab(i){
+  for(var j=0;j<5;j++){
+    document.getElementById('cv-'+j).style.display=j===i?'block':'none';
+    document.getElementById('ct-'+j).className=j===i?'tb on':'tb';
+  }
+  if(i===1)renderMenu();
+  if(i===2)renderCart();
+  var cc=document.getElementById('cCont');
+  if(cc)cc.scrollTop=0;
+}
+
+function renderMenu(){
+  var list=curCat==='all'?mD:mD.filter(function(x){return x.c===curCat});
+  var h='';
+  list.forEach(function(item,i){
+    var q=cart[item.id]?cart[item.id].q:0;
+    h+='<div class="mc" style="animation:sUp .32s ease both;animation-delay:'+(i*.07)+'s">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+    h+='<div style="padding-left:10px;flex:1">';
+    if(item.hot)h+='<span style="font-size:10px;background:rgba(220,169,92,.15);color:#DCA95C;padding:2px 8px;border-radius:6px;margin-bottom:6px;display:inline-block">🔥 الأشهر</span><br>';
+    h+='<div style="font-size:20px;margin-bottom:4px">'+item.em+'</div>';
+    h+='<div style="font-size:13px;font-weight:500;color:#FFF;margin-bottom:2px">'+item.n+'</div>';
+    h+='<div style="font-size:11px;color:rgba(255,255,255,.45);margin-bottom:7px">'+item.d+'</div>';
+    h+='<div style="font-size:14px;font-weight:500;color:#DCA95C">'+item.p.toLocaleString()+' <span style="font-size:10px">د.ع</span></div>';
+    h+='</div>';
+    h+='<div style="display:flex;align-items:center;gap:7px;flex-shrink:0">';
+    if(q>0){
+      h+='<button class="qb" style="background:#242424;color:#DCA95C" onclick="cQ('+item.id+',-1)">−</button>';
+      h+='<span style="font-size:14px;font-weight:500;color:#DCA95C;min-width:16px;text-align:center">'+q+'</span>';
+      h+='<button class="qb" style="background:#DCA95C;color:#000" onclick="cQ('+item.id+',1)">+</button>';
+    }else{
+      h+='<button class="qb" style="background:#DCA95C;color:#000;width:34px;height:34px;font-size:20px;border-radius:10px" onclick="cQ('+item.id+',1)">+</button>';
+    }
+    h+='</div></div></div>';
+  });
+  var el=document.getElementById('mList');
+  if(el)el.innerHTML=h||'<div style="text-align:center;padding:30px;color:rgba(255,255,255,.3)">لا يوجد عناصر</div>';
+}
+
+function cQ(id,d){
+  var item=mD.find(function(x){return x.id===id});
+  if(!cart[id])cart[id]={item:item,q:0};
+  cart[id].q+=d;
+  if(cart[id].q<=0)delete cart[id];
+  renderMenu();
+}
+
+function fc(el,cat){
+  document.querySelectorAll('.pl').forEach(function(p){p.className='pl off'});
+  el.className='pl on';curCat=cat;renderMenu();
+}
+
+function renderCart(){
+  var has=Object.keys(cart).length>0;
+  document.getElementById('cEmpty').style.display=has?'none':'block';
+  document.getElementById('cItems').style.display=has?'block':'none';
+  document.getElementById('cFoot').style.display=has?'block':'none';
+  if(!has)return;
+  var tot=0,h='';
+  for(var k in cart){
+    var c=cart[k],sub=c.item.p*c.q;tot+=sub;
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:11px;background:#1A1A1A;border:1px solid #242424;border-radius:11px;margin-bottom:8px;animation:slideL .3s ease">';
+    h+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+c.item.em+'</span>';
+    h+='<div><div style="font-size:12px;font-weight:500;color:#FFF">'+c.item.n+'</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">× '+c.q+' = '+sub.toLocaleString()+' د.ع</div></div></div>';
+    h+='<button onclick="cQ('+k+','+(- c.q)+')" style="font-size:11px;color:#E24B4A;background:transparent;border:1px solid #343434;border-radius:7px;padding:4px 9px;cursor:pointer;font-family:var(--font-sans)">حذف</button>';
+    h+='</div>';
+  }
+  document.getElementById('cItems').innerHTML=h;
+  document.getElementById('cTot').textContent=tot.toLocaleString()+' د.ع';
+}
+
+function confOrder(btn){btn.disabled=true;btn.style.opacity='.7';btn.textContent='جارٍ الإرسال...';setTimeout(function(){btn.textContent='✓ تم الإرسال';document.getElementById('cConf').style.display='block';cart={};renderCart()},1200)}
+function reqBill(btn){btn.disabled=true;btn.style.opacity='.7';btn.textContent='جارٍ...';setTimeout(function(){btn.textContent='✓ تم الإرسال';document.getElementById('bSent').style.display='block'},1100)}
+function sendNote(btn){var t=document.getElementById('ntArea');if(!t||!t.value.trim())return;btn.disabled=true;btn.style.opacity='.7';setTimeout(function(){btn.textContent='✓ تم الإرسال';document.getElementById('nSent').style.display='block'},900)}
+function sendRate(btn){btn.disabled=true;btn.style.opacity='.7';btn.textContent='...';setTimeout(function(){btn.textContent='✓ شكراً!';document.getElementById('rSent').style.display='block'},900)}
+function rStar(gId,idx){document.querySelectorAll('#'+gId+' .st').forEach(function(s,i){if(i<=idx){s.className='st on';if(i===idx){s.style.animation='none';void s.offsetWidth;s.style.animation='sPop .35s ease';setTimeout(function(){s.style.animation=''},350)}}else s.className='st'})}
+
+function advOrder(btn){
+  if(oStep>3){btn.textContent='✓ اكتملت جميع المراحل';btn.disabled=true;btn.style.opacity='.6';return}
+  var ti=document.getElementById('ti'+oStep);
+  if(ti){ti.style.background='#4CAF50';ti.style.animation=''}
+  var tb=document.getElementById('tb'+oStep);
+  if(tb){tb.className='bx ok';tb.textContent='✓';tb.style.opacity='1'}
+  var ts=document.getElementById('ts'+oStep);
+  if(ts)ts.style.opacity='1';
+  var ln=document.getElementById('ln'+(oStep+1));
+  if(ln)ln.style.background='rgba(220,169,92,.5)';
+  oStep++;
+  if(oStep<=3){
+    var nts=document.getElementById('ts'+oStep);
+    var nti=document.getElementById('ti'+oStep);
+    var ntb=document.getElementById('tb'+oStep);
+    if(nts)nts.style.opacity='1';
+    if(nti){nti.style.background='#E8A020';nti.style.animation='blink 1.5s infinite'}
+    if(ntb){ntb.className='bx wa';ntb.textContent='⏳ الآن';ntb.style.opacity='1'}
+    if(oStep===3)btn.textContent='▶ تم التقديم (أخير)';
+  }else{btn.textContent='✓ اكتملت جميع المراحل';btn.disabled=true;btn.style.opacity='.6'}
+}
+
+function sCall(el,type){
+  el.style.borderColor='#DCA95C';el.style.background='rgba(220,169,92,.1)';
+  var fb=document.getElementById('cFB');
+  if(fb){fb.style.display='block';fb.textContent='✓ تم إرسال طلب '+type+' للنادل!';setTimeout(function(){fb.style.display='none';el.style.borderColor='';el.style.background=''},3000)}
+}
+
+function renderKitchen(){
+  var h='';
+  kOrds.forEach(function(o,i){
+    var isN=o.s==='new',isR=o.s==='ready';
+    var bc=isR?'#4CAF50':isN?'rgba(220,169,92,.4)':'#242424';
+    h+='<div style="background:#1A1A1A;border:1px solid '+bc+';border-radius:13px;padding:14px;animation:sUp .32s ease both;animation-delay:'+(i*.08)+'s">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
+    h+='<div><div style="font-size:15px;font-weight:500;color:'+(isR?'#4CAF50':'#DCA95C')+'">'+o.id+' | '+o.tbl+'</div>';
+    h+='<div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">⏱ '+o.time+'</div></div>';
+    if(isN)h+='<span class="bx go" style="animation:blink 2s infinite">جديد</span>';
+    if(isR)h+='<span class="bx ok">✓ جاهز</span>';
+    h+='</div>';
+    h+='<div style="font-size:12px;color:rgba(255,255,255,.75);background:#111;border-radius:9px;padding:9px;margin-bottom:11px;line-height:1.7">'+o.items+'</div>';
+    if(isN)h+='<button class="gb" style="width:100%" onclick="markReady('+i+',this)">✓ Mark Ready — تم التحضير</button>';
+    else h+='<div style="text-align:center;font-size:12px;color:#4CAF50;padding:8px;background:rgba(76,175,80,.08);border-radius:9px">تم التحضير ✓</div>';
+    h+='</div>';
+  });
+  var el=document.getElementById('kOrds');
+  if(el)el.innerHTML=h;
+}
+
+function markReady(idx,btn){btn.textContent='...';btn.disabled=true;setTimeout(function(){kOrds[idx].s='ready';renderKitchen()},600)}
+
+function renderWaiter(){
+  var h='';
+  if(!alerts.length)h='<div style="text-align:center;padding:28px;color:rgba(255,255,255,.25);font-size:13px">لا يوجد نداءات نشطة ✓</div>';
+  alerts.forEach(function(a,i){
+    h+='<div style="background:#1A1A1A;border:1px solid #E24B4A;border-radius:11px;padding:11px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;animation:sUp .3s ease both;animation-delay:'+(i*.1)+'s">';
+    h+='<div style="display:flex;align-items:center;gap:9px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(226,75,74,.12);display:flex;align-items:center;justify-content:center;font-size:19px">'+a.em+'</div>';
+    h+='<div><div style="font-size:12px;font-weight:500;color:#FFF">طاولة '+a.tbl+' — '+a.type+'</div><div style="font-size:10px;color:rgba(255,255,255,.4)">'+a.time+' PM</div></div></div>';
+    h+='<button onclick="dimAlert('+i+',this)" style="background:transparent;color:#DCA95C;border:1px solid #343434;border-radius:8px;padding:5px 11px;font-size:11px;cursor:pointer;font-family:var(--font-sans)">تم ✓</button>';
+    h+='</div>';
+  });
+  var wa=document.getElementById('wAlerts');if(wa)wa.innerHTML=h;
+
+  var rh='';
+  resv.forEach(function(r,i){
+    rh+='<div style="background:#1A1A1A;border:1px solid '+(r.ok?'rgba(220,169,92,.4)':'#242424')+';border-radius:10px;padding:11px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;animation:sUp .3s ease both;animation-delay:'+(i*.08)+'s">';
+    rh+='<div><div style="font-size:12px;font-weight:500;color:#FFF">'+r.t+' — '+r.tbl+'</div><div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">'+r.n+'</div></div>';
+    rh+='<span class="bx '+(r.ok?'go':'')+'">'+( r.ok?'مؤكد':'انتظار')+'</span>';
+    rh+='</div>';
+  });
+  var wr=document.getElementById('wRes');if(wr)wr.innerHTML=rh;
+
+  var sC={serving:'#4CAF50',assigned:'#DCA95C',done:'rgba(255,255,255,.3)'};
+  var sL={serving:'يقدّم',assigned:'مكلّف',done:'منتهي'};
+  var sB={serving:'ok',assigned:'go',done:''};
+  var qh='';
+  queueD.forEach(function(q){
+    qh+='<tr style="border-top:1px solid #1A1A1A">';
+    qh+='<td style="padding:9px 12px;font-weight:500;color:#DCA95C">'+q.id+'</td>';
+    qh+='<td style="padding:9px 12px;color:rgba(255,255,255,.8)">'+q.tbl+'</td>';
+    qh+='<td style="padding:9px 12px;color:rgba(255,255,255,.6)">'+q.items+'</td>';
+    qh+='<td style="padding:9px 12px;color:rgba(255,255,255,.8)">'+q.waiter+'</td>';
+    qh+='<td style="padding:9px 12px"><span class="bx '+(sB[q.s])+'">'+sL[q.s]+'</span></td>';
+    qh+='</tr>';
+  });
+  var wq=document.getElementById('wQueue');if(wq)wq.innerHTML=qh;
+}
+
+function dimAlert(idx,btn){btn.textContent='...';btn.disabled=true;setTimeout(function(){alerts.splice(idx,1);renderWaiter()},500)}
+
+function renderAdmin(){
+  var nh='';
+  notifsD.forEach(function(n,i){
+    nh+='<div style="padding:8px 10px 8px 0;border-right:2.5px solid '+n.cl+';border-radius:0;margin-bottom:9px;animation:slideL .3s ease both;animation-delay:'+(i*.09)+'s">';
+    nh+='<div style="display:flex;justify-content:space-between"><div><div style="font-size:12px;font-weight:500;color:#FFF">طاولة '+n.tbl+'</div><div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:2px">'+n.msg+'</div></div><span style="font-size:10px;color:rgba(255,255,255,.3)">'+n.time+'</span></div></div>';
+  });
+  var an=document.getElementById('aNtf');if(an)an.innerHTML=nh;
+
+  var th='';
+  topI.forEach(function(t,i){
+    th+='<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;margin-bottom:5px">';
+    th+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;color:rgba(255,255,255,.35);min-width:14px">'+(i+1)+'</span><span style="font-size:12px;font-weight:500;color:#FFF">'+t.n+'</span></div>';
+    th+='<span style="font-size:12px;font-weight:500;color:'+t.col+'">'+t.c+' طلب</span></div>';
+    th+='<div style="background:#242424;height:5px;border-radius:4px"><div style="background:'+t.col+';height:5px;border-radius:4px;width:'+t.p+'%"></div></div></div>';
+  });
+  var at=document.getElementById('aTop');if(at)at.innerHTML=th;
+
+  var maxV=Math.max.apply(null,hourVols);
+  var ch='';
+  hourVols.forEach(function(v){
+    var hp=Math.round(v/maxV*56);
+    var cl=v>50?'#DCA95C':v>30?'#B8892A':v>15?'#6A4D1A':'#2A2A2A';
+    ch+='<div style="flex:1;display:flex;align-items:flex-end"><div style="width:100%;height:'+hp+'px;background:'+cl+';border-radius:3px 3px 0 0"></div></div>';
+  });
+  var ac=document.getElementById('aChart');if(ac)ac.innerHTML=ch;
+
+  var tC={g:'#DCA95C',e:'#E24B4A',f:'#242424'};
+  var tT={g:'#000',e:'#FFF',f:'rgba(255,255,255,.35)'};
+  var fh='';
+  tables.forEach(function(t){
+    fh+='<div style="padding:8px 2px;border-radius:8px;background:'+tC[t.s]+';text-align:center;font-size:11px;font-weight:500;color:'+tT[t.s]+';cursor:pointer;transition:all .2s" title="طاولة '+t.n+'" onclick="togTbl('+t.n+')">'+t.n+'</div>';
+  });
+  var af=document.getElementById('aFloor');if(af)af.innerHTML=fh;
+
+  var oh='';
+  offers.forEach(function(o,i){
+    oh+='<div style="background:#1A1A1A;border:1px solid '+(o.on?'rgba(220,169,92,.4)':'#242424')+';border-radius:12px;padding:13px;animation:sUp .3s ease both;animation-delay:'+(i*.08)+'s">';
+    oh+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">';
+    oh+='<div style="font-size:12px;font-weight:500;color:'+(o.on?'#DCA95C':'rgba(255,255,255,.5)')+'">'+o.t+'</div>';
+    oh+='<div style="width:36px;height:20px;border-radius:10px;background:'+(o.on?'#DCA95C':'#343434')+';cursor:pointer;position:relative;transition:all .3s;flex-shrink:0" onclick="togOffer('+i+')">';
+    oh+='<div style="width:16px;height:16px;border-radius:50%;background:#FFF;position:absolute;top:2px;'+(o.on?'left:18px':'left:2px')+';transition:left .3s"></div></div></div>';
+    oh+='<div style="font-size:11px;color:rgba(255,255,255,.45)">'+o.d+'</div></div>';
+  });
+  var ao=document.getElementById('aOffers');if(ao)ao.innerHTML=oh;
+}
+
+function togTbl(n){var t=tables.find(function(x){return x.n===n});if(!t)return;var c={g:'e',e:'f',f:'g'};t.s=c[t.s];renderAdmin()}
+function togOffer(i){offers[i].on=!offers[i].on;renderAdmin()}
+function addOffer(){if(eoIdx<extraOffers.length){offers.push(extraOffers[eoIdx]);eoIdx++;renderAdmin()}}
+
+renderMenu();
+</script>

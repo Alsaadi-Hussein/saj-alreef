@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #DCA95C;
+  --gold-light: #F0C878;
+  --gold-dark: #B8892A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #080808;
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Arabic serif */
+.font-serif { font-family: 'Amiri', Georgia, serif; }
+
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #343434; border-radius: 4px; }
+
+/* Gold status badge */
+@layer components {
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-medium; }
+  .badge-ok   { @apply bg-ok/15 text-ok; }
+  .badge-err  { @apply bg-err/15 text-err; }
+  .badge-warn { @apply bg-warn/15 text-warn; }
+  .badge-gold { @apply bg-gold/15 text-gold; }
+}
