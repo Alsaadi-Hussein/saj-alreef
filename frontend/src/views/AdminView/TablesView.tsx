@@ -1,7 +1,105 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { QRCodeCanvas } from 'qrcode.react'
 import { api } from '../../lib/api'
 import { supabase } from '../../lib/supabase'
 import type { Table } from '../../types/index'
+
+// ─── QR Modal ─────────────────────────────────────────────────
+function QrModal({ table, onClose }: { table: Table; onClose: () => void }) {
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const url = `${window.location.origin}/?table=${table.n}`
+
+  function downloadPng() {
+    const canvas = canvasRef.current?.querySelector('canvas')
+    if (!canvas) return
+    const link = document.createElement('a')
+    link.download = `saj-alreef-table-${table.n}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  }
+
+  function printQr() {
+    const canvas = canvasRef.current?.querySelector('canvas')
+    if (!canvas) return
+    const dataUrl = canvas.toDataURL('image/png')
+    const w = window.open('', '_blank', 'width=480,height=640')
+    if (!w) return
+    w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>QR طاولة ${table.n}</title>
+    <style>
+      body { font-family: 'Tajawal', -apple-system, sans-serif; text-align: center; padding: 40px 20px; margin: 0; direction: rtl; }
+      .brand { font-size: 26px; font-weight: 800; color: #DCA95C; margin-bottom: 4px; letter-spacing: -0.5px; }
+      .brand-en { font-size: 11px; color: #888; letter-spacing: 5px; margin-bottom: 28px; }
+      .divider { width: 80px; height: 1px; background: #DCA95C; margin: 0 auto 28px; }
+      .qr { padding: 20px; border: 2px solid #DCA95C; border-radius: 14px; display: inline-block; background: #fff; }
+      .qr img { display: block; width: 280px; height: 280px; }
+      .table-num { font-size: 42px; font-weight: 800; color: #111; margin-top: 24px; }
+      .table-label { font-size: 14px; color: #555; margin-top: 4px; }
+      .hint { font-size: 13px; color: #888; margin-top: 24px; line-height: 1.7; }
+      .url { font-size: 10px; color: #aaa; margin-top: 16px; font-family: monospace; word-break: break-all; }
+    </style></head>
+    <body>
+      <div class="brand">صاج الريف</div>
+      <div class="brand-en">SAJ AL REEF</div>
+      <div class="divider"></div>
+      <div class="qr"><img src="${dataUrl}" alt="QR" /></div>
+      <div class="table-num">طاولة ${table.n}</div>
+      ${table.label ? `<div class="table-label">${table.label}</div>` : ''}
+      <div class="hint">امسح الرمز بكاميرا الهاتف<br/>لطلب الطعام مباشرة من طاولتك</div>
+      <div class="url">${url}</div>
+      <script>setTimeout(() => { window.print(); }, 300)</script>
+    </body></html>`)
+    w.document.close()
+  }
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-5"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="rounded-2xl border border-gold/40 p-6 max-w-[380px] w-full text-center"
+        style={{ background: '#111111' }}
+        dir="rtl"
+      >
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={onClose}
+            className="text-white/40 hover:text-white text-[20px] cursor-pointer bg-transparent border-none leading-none"
+            aria-label="إغلاق"
+          >
+            ×
+          </button>
+          <div className="text-[15px] font-semibold text-gold">QR طاولة {table.n}</div>
+        </div>
+
+        <div ref={canvasRef} className="inline-block p-4 rounded-xl mb-4" style={{ background: '#fff' }}>
+          <QRCodeCanvas value={url} size={200} fgColor="#0a0a0a" bgColor="#ffffff" level="H" includeMargin={false} />
+        </div>
+
+        {table.label && <div className="text-[12px] text-gold/70 mb-1">{table.label}</div>}
+        <div className="text-[11px] text-white/40 mb-4 font-mono break-all">{url}</div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={downloadPng}
+            className="py-2.5 rounded-[9px] text-[12px] font-medium bg-c2 border border-c3 text-white/80 hover:bg-c3 hover:border-gold/40 cursor-pointer transition-colors"
+          >
+            ⬇ تنزيل PNG
+          </button>
+          <button
+            onClick={printQr}
+            className="py-2.5 rounded-[9px] text-[12px] font-semibold text-black hover:opacity-90 active:scale-95 cursor-pointer border-none transition-opacity"
+            style={{ background: '#DCA95C' }}
+          >
+            🖨 طباعة
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const STATUS_LABEL: Record<string, string> = { g: 'فارغة', e: 'يأكلون', f: 'ينهون' }
 const STATUS_COLOR: Record<string, string> = { g: '#4CAF50', e: '#DCA95C', f: '#E24B4A' }
@@ -18,6 +116,7 @@ export default function TablesView() {
   const [editMeta, setEditMeta] = useState({ floor: '1', label: '', capacity: '4' })
   const [error,   setError]   = useState('')
   const [saving,  setSaving]  = useState(false)
+  const [qrTable, setQrTable] = useState<Table | null>(null)
 
   useEffect(() => {
     api.getTables().then(t => { setTables(t); setLoading(false) })
@@ -45,7 +144,14 @@ export default function TablesView() {
       setTables(prev => [...prev, added].sort((a, b) => a.n - b.n))
       setForm(EMPTY_FORM)
       setShowAdd(false)
-    } catch { setError('فشل الحفظ، حاول مجدداً') }
+    } catch (e: any) {
+      const msg = e?.message ?? 'فشل الحفظ، حاول مجدداً'
+      const hint = e?.code === '42501' || /row-level security|RLS|policy/i.test(msg)
+        ? ' — تحقق من سياسات RLS في Supabase (مطلوب INSERT policy على restaurant_tables)'
+        : ''
+      setError(msg + hint)
+      console.error('addTable failed:', e)
+    }
     setSaving(false)
   }
 
@@ -165,12 +271,21 @@ export default function TablesView() {
                     style={{ background: STATUS_BG[t.s] ?? '#111111', borderColor: (STATUS_COLOR[t.s] ?? '#DCA95C') + '40' }}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <button
-                        onClick={() => startEdit(t)}
-                        className="text-[10px] text-white/30 hover:text-gold border border-c3/50 rounded-[5px] px-1.5 py-0.5 cursor-pointer transition-colors"
-                      >
-                        تعديل
-                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setQrTable(t)}
+                          className="text-[10px] text-gold/70 hover:text-gold border border-gold/30 hover:border-gold rounded-[5px] px-1.5 py-0.5 cursor-pointer transition-colors"
+                          title="عرض رمز QR للطباعة"
+                        >
+                          QR
+                        </button>
+                        <button
+                          onClick={() => startEdit(t)}
+                          className="text-[10px] text-white/30 hover:text-gold border border-c3/50 rounded-[5px] px-1.5 py-0.5 cursor-pointer transition-colors"
+                        >
+                          تعديل
+                        </button>
+                      </div>
                       <div className="text-[20px] font-semibold text-white">{t.n}</div>
                     </div>
 
@@ -200,6 +315,8 @@ export default function TablesView() {
       {tables.length === 0 && (
         <div className="text-center py-20 text-white/25 text-[14px]">لا توجد طاولات — أضف الأولى</div>
       )}
+
+      {qrTable && <QrModal table={qrTable} onClose={() => setQrTable(null)} />}
     </div>
   )
 }
