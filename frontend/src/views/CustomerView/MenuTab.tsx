@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { menuData, BASE_IMG } from '../../data/menuData'
 import type { MenuItem as StoreItem, Offer } from '../../types/index'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { supabase } from '../../lib/supabase'
+
+// Admin-added DB items appear as their own category at the end of the menu.
+const ADDED_CAT_ID = '__added'
 
 // ─── Price parser ──────────────────────────────────────────────
 function parsePrice(p: string): number {
@@ -93,6 +96,7 @@ export default function MenuTab() {
   const [activeId, setActiveId] = useState(menuData[0]?.id ?? '')
   const [animKey, setAnimKey]   = useState(0)
   const [offers, setOffers]     = useState<Offer[]>([])
+  const [dbItems, setDbItems]   = useState<StoreItem[]>([])
 
   const { cart, setCartQty } = useStore()
 
@@ -107,14 +111,52 @@ export default function MenuTab() {
 
   useEffect(() => {
     api.getOffers().then(all => setOffers(all.filter(o => o.active)))
+    api.getMenu().then(setDbItems)
     const ch = supabase
       .channel('menu-offers-rt')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
         api.getOffers().then(all => setOffers(all.filter(o => o.active)))
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
+        api.getMenu().then(setDbItems)
+      })
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [])
+
+  // Admin-added items (from the DB) as a dedicated category, plus a name→item
+  // lookup so the cart works for them.
+  const dbStoreMap = useMemo(() => {
+    const m = new Map<string, StoreItem>()
+    for (const it of dbItems) m.set(it.name, it)
+    return m
+  }, [dbItems])
+
+  const allCats = useMemo(() => {
+    if (dbItems.length === 0) return menuData
+    const toLocal = (it: StoreItem) => ({
+      a: it.name, e: it.desc, p: it.price.toLocaleString(),
+      r: false as boolean, img: undefined as string | undefined, imgFull: it.image as string | undefined,
+    })
+    // Group admin-added items by their chosen section.
+    const known = new Set(menuData.map(c => c.id))
+    const byCat = new Map<string, StoreItem[]>()
+    for (const it of dbItems) {
+      const cid = known.has(it.category) ? it.category : ADDED_CAT_ID
+      const arr = byCat.get(cid) ?? []
+      arr.push(it); byCat.set(cid, arr)
+    }
+    // Merge into matching sections; anything unmatched goes to a fallback section.
+    const merged = menuData.map(c => {
+      const extra = byCat.get(c.id)
+      return extra && extra.length ? { ...c, items: [...c.items, ...extra.map(toLocal)] } : c
+    })
+    const orphans = byCat.get(ADDED_CAT_ID)
+    if (orphans && orphans.length) {
+      merged.push({ id: ADDED_CAT_ID, label: 'وجبات مضافة', icon: '⭐', items: orphans.map(toLocal) })
+    }
+    return merged
+  }, [dbItems])
 
   function handleTab(id: string, btn: HTMLButtonElement) {
     if (id === activeId) return
@@ -123,7 +165,7 @@ export default function MenuTab() {
     btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }
 
-  const cat = menuData.find(c => c.id === activeId)
+  const cat = allCats.find(c => c.id === activeId)
 
   return (
     <div dir="rtl" style={{ background: '#0a0a0a', minHeight: '100%' }}>
@@ -246,7 +288,7 @@ export default function MenuTab() {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'row', padding: '0 8px', minWidth: 'max-content' }}>
-          {menuData.map(c => (
+          {allCats.map(c => (
             <button
               key={c.id}
               className="saj-menu-tab"
@@ -303,8 +345,10 @@ export default function MenuTab() {
           {/* Items grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
             {cat.items.map((item, i) => {
-              const storeItem = menuItemMap.get(`${cat.id}::${item.a}`)
+              // DB (admin-added) items match by name; static items by category::name.
+              const storeItem = dbStoreMap.get(item.a) ?? menuItemMap.get(`${cat.id}::${item.a}`)
               const cartQty   = storeItem ? (cart[storeItem.id]?.qty ?? 0) : 0
+              const imgSrc    = (item as { imgFull?: string }).imgFull ?? (item.img ? `${BASE_IMG}${item.img}` : null)
 
               return (
                 <div key={i} className="saj-card">
@@ -368,9 +412,9 @@ export default function MenuTab() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       alignSelf: 'center',
                     }}>
-                      {item.img ? (
+                      {imgSrc ? (
                         <img
-                          src={`${BASE_IMG}${item.img}`}
+                          src={imgSrc}
                           alt={item.a}
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                           onError={e => {

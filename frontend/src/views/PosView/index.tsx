@@ -16,6 +16,31 @@ interface PosMenuItem {
   categoryLabel: string
   emoji: string
   img: string | null
+  imgSrc?: string | null   // full image src (data URL for admin-added items)
+}
+
+// Fallback category for DB items whose section isn't a known menu section.
+const ADDED_CAT = 'added'
+const ADDED_LABEL = 'وجبات مضافة'
+const KNOWN_CATS = new Set(menuData.map(c => c.id))
+const sectionLabel = (id: string) => menuData.find(c => c.id === id)?.label ?? ADDED_LABEL
+
+// DB ids are offset so they never collide with static item ids in the cart.
+// The item lands in the exact section the admin picked (m.category).
+function dbToPosItem(m: MenuItem): PosMenuItem {
+  const cid = KNOWN_CATS.has(m.category) ? m.category : ADDED_CAT
+  return {
+    id: 1_000_000 + m.id,
+    name: m.name,
+    nameEn: m.desc ?? '',
+    desc: m.desc ?? '',
+    price: m.price,
+    category: cid,
+    categoryLabel: sectionLabel(cid),
+    emoji: m.emoji || '🍽️',
+    img: null,
+    imgSrc: m.image ?? null,
+  }
 }
 
 function parsePrice(p: string): number {
@@ -68,10 +93,12 @@ export default function PosView() {
   const [loadingOrders, setLoadingOrders] = useState(false)
   const [paying,        setPaying]        = useState(false)
   const [ordersTick,    setOrdersTick]    = useState(0)
+  const [dbItems,       setDbItems]       = useState<PosMenuItem[]>([])
 
   // Main data + realtime
   useEffect(() => {
     api.getTables().then(setTables)
+    api.getMenu().then(ms => setDbItems(ms.map(dbToPosItem)))
 
     const ch = supabase.channel('pos-rt')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'restaurant_tables' }, () => {
@@ -82,6 +109,9 @@ export default function PosView() {
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
         setOrdersTick(t => t + 1)
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
+        api.getMenu().then(ms => setDbItems(ms.map(dbToPosItem)))
       })
       .subscribe()
     return () => { supabase.removeChannel(ch) }
@@ -97,7 +127,17 @@ export default function PosView() {
     })
   }, [selectedTable?.n, ordersTick])
 
-  const visible     = posCategory === 'all' ? allPosItems : allPosItems.filter(i => i.category === posCategory)
+  // Admin-added items appear inside their own section; only show the fallback
+  // "وجبات مضافة" chip if some items have an unknown section.
+  const hasExtras = dbItems.some(i => i.category === ADDED_CAT)
+  const catChips = [
+    ...CATS,
+    ...(hasExtras ? [{ id: ADDED_CAT, label: ADDED_LABEL }] : []),
+  ]
+  const visible =
+    posCategory === 'all'       ? [...dbItems, ...allPosItems]
+    : posCategory === ADDED_CAT ? dbItems.filter(i => i.category === ADDED_CAT)
+    : [...dbItems.filter(i => i.category === posCategory), ...allPosItems.filter(i => i.category === posCategory)]
   const floorTables = tables.filter(t => t.floor === activeFloor)
   const cartItems   = Object.values(posCart)
   const subtotal    = cartItems.reduce((s, c) => s + c.item.price * c.qty, 0)
@@ -272,7 +312,7 @@ export default function PosView() {
             <h1 className="text-[20px] font-semibold text-white">POS — نقطة البيع</h1>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-            {CATS.map(c => (
+            {catChips.map(c => (
               <button
                 key={c.id}
                 onClick={() => setPosCategory(c.id)}
@@ -352,10 +392,10 @@ export default function PosView() {
                     borderColor: inCart > 0 ? 'rgba(220,169,92,0.4)' : '#242424',
                   }}
                 >
-                  {item.img ? (
-                    <img src={BASE_IMG + item.img} alt={item.name} className="w-full h-20 object-cover" />
+                  {(item.imgSrc ?? (item.img ? BASE_IMG + item.img : null)) ? (
+                    <img src={item.imgSrc ?? BASE_IMG + item.img} alt={item.name} className="w-full h-20 object-cover" />
                   ) : (
-                    <div className="pt-4 pb-1 text-[26px]">🍽️</div>
+                    <div className="pt-4 pb-1 text-[26px]">{item.emoji || '🍽️'}</div>
                   )}
                   <div className="px-3 pb-3 pt-1 flex flex-col flex-1">
                     <div className="text-[12px] font-medium text-white mb-0.5 leading-tight">{item.name}</div>

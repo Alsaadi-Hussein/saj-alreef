@@ -2,7 +2,14 @@ import { supabase } from './supabase'
 import type { MenuItem, KitchenOrder, Alert, Reservation, QueueItem, Table, Offer, AdminNotification, StockItem, Session, Rating } from '../types/index'
 
 // ─── Row mappers ─────────────────────────────────────────────
-const mapMenuItem  = (r: any): MenuItem  => ({ id: r.id, name: r.name, desc: r.description, price: r.price, category: r.category, emoji: r.emoji, hot: r.hot ?? false })
+// The `emoji` column doubles as the item's visual: it holds either an emoji
+// character or an uploaded photo stored as a data URL. Split them on read so the
+// UI always has a safe emoji to fall back to plus the image when one exists.
+const mapMenuItem  = (r: any): MenuItem  => {
+  const visual = typeof r.emoji === 'string' ? r.emoji : ''
+  const isImg  = visual.startsWith('data:image')
+  return { id: r.id, name: r.name, desc: r.description, price: r.price, category: r.category, emoji: isImg ? '🍽️' : (visual || '🍽️'), hot: r.hot ?? false, image: isImg ? visual : undefined }
+}
 const mapOrder     = (r: any): KitchenOrder => ({ id: r.id, table: r.table_ref, items: r.items, time: r.time, status: r.status, createdAt: r.created_at, sessionId: r.session_id ?? undefined, total: r.total ?? 0 })
 export const mapAlert = (r: any): Alert  => ({ id: r.id, table: r.table_ref, type: r.type, emoji: r.emoji, time: r.time })
 export const mapTable = (r: any): Table  => ({ n: r.n, s: r.status, floor: r.floor ?? 1, label: r.label ?? '', capacity: r.capacity ?? 4, currentSessionId: r.current_session_id ?? null })
@@ -42,7 +49,7 @@ export const api = {
     return mapMenuItem(data)
   },
 
-  updateMenuItem: async (id: number, updates: Partial<{ name: string; price: number; description: string; emoji: string; hot: boolean }>): Promise<MenuItem> => {
+  updateMenuItem: async (id: number, updates: Partial<{ name: string; price: number; description: string; emoji: string; hot: boolean; category: string }>): Promise<MenuItem> => {
     const { data, error } = await supabase.from('menu_items').update(updates).eq('id', id).select().single()
     if (error) throw error
     return mapMenuItem(data)
@@ -103,7 +110,7 @@ export const api = {
       .select().single()
     if (error) throw error
     await supabase.from('restaurant_tables').update({ status: 'e' }).eq('n', tableNum)
-    await supabase.from('notifications').insert({ table_ref: String(tableNum), message: `طلب جديد ${id}`, time: 'الآن', color: '#DCA95C' })
+    await supabase.from('notifications').insert({ table_ref: String(tableNum), message: `طلب جديد ${id}`, time: nowStr(), color: '#DCA95C' })
     return mapOrder(data)
   },
 
@@ -128,7 +135,7 @@ export const api = {
       .insert({ table_ref: table, type, emoji, time: nowStr(), table_id: tableId })
       .select().single()
     if (error) throw error
-    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `نداء: ${type}`, time: 'الآن', color: '#E8A020' })
+    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `نداء: ${type}`, time: nowStr(), color: '#E8A020' })
     return mapAlert(data)
   },
 
@@ -173,7 +180,7 @@ export const api = {
       .insert(payload)
       .select().single()
     if (error) throw error
-    await supabase.from('notifications').insert({ table_ref: tableN, message: `حجز مؤكد — ${name}`, time: 'الآن', color: '#4CAF50' })
+    await supabase.from('notifications').insert({ table_ref: tableN, message: `حجز مؤكد — ${name}`, time: nowStr(), color: '#4CAF50' })
     return mapResv(data)
   },
 
@@ -249,11 +256,11 @@ export const api = {
   requestBill: async (table: string): Promise<void> => {
     const n = parseInt(table.replace('T', ''))
     await supabase.from('restaurant_tables').update({ status: 'f' }).eq('n', n)
-    await supabase.from('notifications').insert({ table_ref: String(n), message: 'طلب الحساب', time: 'الآن', color: '#E24B4A' })
+    await supabase.from('notifications').insert({ table_ref: String(n), message: 'طلب الحساب', time: nowStr(), color: '#E24B4A' })
   },
 
   sendNote: async (table: string, note: string): Promise<void> => {
-    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `ملاحظة: ${note.slice(0, 30)}`, time: 'الآن', color: '#4CAF50' })
+    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `ملاحظة: ${note.slice(0, 30)}`, time: nowStr(), color: '#4CAF50' })
   },
 
   // ── Ratings — now uses the dedicated ratings table ───────────
@@ -465,6 +472,6 @@ export const api = {
     const tableNum = parseInt(table.replace('T', '')) || 0
     await supabase.from('orders').insert({ id, table_ref: table, items, time: nowStr(), status: 'new', total })
     await supabase.from('restaurant_tables').update({ status: 'e' }).eq('n', tableNum)
-    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `POS طلب ${id} — ${total.toLocaleString()} د.ع`, time: 'الآن', color: '#DCA95C' })
+    await supabase.from('notifications').insert({ table_ref: table.replace('T', ''), message: `POS طلب ${id} — ${total.toLocaleString()} د.ع`, time: nowStr(), color: '#DCA95C' })
   },
 }

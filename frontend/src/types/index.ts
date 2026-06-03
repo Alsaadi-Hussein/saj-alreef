@@ -3,9 +3,13 @@ export interface MenuItem {
   name: string
   desc: string
   price: number
-  category: 'm' | 's' | 'd' | 'sw'
+  // Menu section id. Either a granular section from menuData (e.g. 'pizza', 'saj')
+  // or a legacy coarse code ('m' | 's' | 'd' | 'sw') from older seed data.
+  category: string
   emoji: string
   hot?: boolean
+  /** Optional uploaded photo as a data URL. When set, shown instead of the emoji. */
+  image?: string
 }
 
 export interface CartItem {

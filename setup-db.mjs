@@ -42,6 +42,8 @@ await run('create orders', `
     items      text    not null,
     time       text    not null,
     status     text    not null default 'new',
+    session_id text,
+    total      integer not null default 0,
     created_at timestamptz default now()
   )`)
 
@@ -49,6 +51,7 @@ await run('create alerts', `
   create table if not exists alerts (
     id         bigint primary key generated always as identity,
     table_ref  text   not null,
+    table_id   integer,
     type       text   not null,
     emoji      text   default '👨‍🍽️',
     time       text   not null,
@@ -61,7 +64,11 @@ await run('create reservations', `
     time      text    not null,
     table_ref text    not null,
     name      text    not null,
-    confirmed boolean default false
+    confirmed boolean default false,
+    guests    integer not null default 2,
+    phone     text    not null default '',
+    notes     text    not null default '',
+    section   text    not null default ''
   )`)
 
 await run('create queue', `
@@ -75,8 +82,12 @@ await run('create queue', `
 
 await run('create restaurant_tables', `
   create table if not exists restaurant_tables (
-    n      integer primary key,
-    status text    not null default 'f'
+    n                  integer primary key,
+    status             text    not null default 'g',
+    floor              integer not null default 1,
+    label              text    not null default '',
+    capacity           integer not null default 4,
+    current_session_id text
   )`)
 
 await run('create offers', `
